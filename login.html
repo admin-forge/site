@@ -20,32 +20,78 @@ body {
 }
 .login-container {
   text-align:center; background:var(--card-bg); padding:2rem 3rem; border-radius:12px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.4); transition:transform var(--transition),box-shadow var(--transition);
+  box-shadow:0 8px 20px rgba(0,0,0,0.4); transition: transform var(--transition), box-shadow var(--transition);
   animation: fadeIn 1s ease;
 }
-.login-container:hover { transform:translateY(-5px); box-shadow:0 12px 25px rgba(0,0,0,0.5);}
-.login-container h1 {
+.login-container:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.5);}
+h1 {
   margin-bottom:2rem; font-size:2rem;
   background: linear-gradient(90deg,var(--primary),var(--hover));
   -webkit-background-clip: text; color:transparent;
 }
-.discord-btn {
+.discord-btn, .logout-btn {
   display:inline-block; padding:.75rem 2rem; background:var(--primary); color:var(--text);
-  font-weight:700; text-decoration:none; border-radius:8px;
+  font-weight:700; text-decoration:none; border-radius:8px; cursor:pointer;
   transition: background var(--transition), transform var(--transition);
   box-shadow:0 4px 10px rgba(0,0,0,0.3);
 }
-.discord-btn:hover { background:var(--hover); transform:scale(1.05); }
+.discord-btn:hover, .logout-btn:hover { background:var(--hover); transform:scale(1.05); }
+.user-info img { width:80px; border-radius:50%; margin:1rem 0; border:2px solid var(--primary);}
+.user-info p { font-size:1.2rem; font-weight:500; margin:0.5rem 0; }
 @keyframes fadeIn { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
 </style>
 </head>
 <body>
-<div class="login-container">
+<div class="login-container" id="loginContainer">
   <h1>Connexion Discord</h1>
-  <a class="discord-btn" 
-     href="https://discord.com/oauth2/authorize?client_id=1324712992910213150&response_type=code&redirect_uri=https%3A%2F%2Fadmin-forge.github.io%2Fsite%2Flogin.html&scope=email">
-    Se connecter avec Discord
-  </a>
+  <div id="loginContent">
+    <a class="discord-btn" 
+       href="https://discord.com/api/oauth2/authorize?client_id=1324712992910213150&redirect_uri=https%3A%2F%2Fcraftpick.fr%2Flogin.html&response_type=code&scope=identify">
+      Se connecter avec Discord
+    </a>
+  </div>
 </div>
+
+<script>
+// Récupère le code Discord dans l'URL
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
+const loginContent = document.getElementById('loginContent');
+
+// Fonction pour afficher les infos utilisateur simulées
+function showUser(user) {
+  loginContent.innerHTML = `
+    <div class="user-info">
+      <p>Connecté avec Discord !</p>
+      <img src="${user.avatar}" alt="Avatar">
+      <p>Pseudo : ${user.username}</p>
+      <p>Code OAuth reçu : ${code}</p>
+      <button class="logout-btn" id="logoutBtn">Déconnexion</button>
+    </div>
+  `;
+
+  // Bouton déconnexion
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    // Supprime le code de l'URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    // Réaffiche le bouton Discord
+    loginContent.innerHTML = `
+      <a class="discord-btn" 
+         href="https://discord.com/api/oauth2/authorize?client_id=1324712992910213150&redirect_uri=https%3A%2F%2Fcraftpick.fr%2Flogin.html&response_type=code&scope=identify">
+        Se connecter avec Discord
+      </a>
+    `;
+  });
+}
+
+// Si un code est présent dans l'URL, afficher l'utilisateur simulé
+if(code){
+  const simulatedUser = {
+    username: "TestUser",
+    avatar: "https://cdn.discordapp.com/avatars/81384788765712384/2b5bfa9e7a6bb05d6c1e.png?size=128"
+  };
+  showUser(simulatedUser);
+}
+</script>
 </body>
 </html>
