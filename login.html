@@ -1,74 +1,46 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MC Admin Forge - Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
+<html lang=\fr\<head>
+  <meta charset=\UTF-8\  <meta name=\viewport\ content=\width=device-width, initial-scale=1\  <title>Login avec Discord</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #2C2F33;
+      color: #FFF;
+    }
+    .login-container {
+      text-align: center;
+      background: #23272A;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .login-container h1 {
+      margin-bottom: 1.5rem;
+    }
+    .discord-btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #5865F2;
+      color: #FFF;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+    .discord-btn:hover {
+      background: #4752C4;
+    }
+  </style>
 </head>
-<body id="body" class="p-4">
-
-  <header class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-green-500">MC Admin Forge</h1>
-    <div class="flex gap-2">
-      <span id="userDisplay" class="font-semibold"></span>
-      <button id="logoutBtn" class="btn btn-logout">Déconnexion</button>
-      <button id="toggleDark" class="btn">Mode sombre</button>
-    </div>
-  </header>
-
-  <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-    <div class="card">
-      <h2 class="font-bold mb-2">Générateur de MOTD</h2>
-      <input type="text" id="motdInput" placeholder="Tapez votre MOTD" class="input-field w-full p-2 mb-2" />
-      <div id="motdPreview" class="p-2 border rounded h-20 bg-gray-100"></div>
-    </div>
-
-    <div class="card">
-      <h2 class="font-bold mb-2">Convertisseur YAML ↔ JSON</h2>
-      <textarea id="configInput" class="input-field w-full h-28 p-2 mb-2"></textarea>
-      <div class="flex gap-2">
-        <button id="jsonToYaml" class="btn btn-primary">JSON → YAML</button>
-        <button id="yamlToJson" class="btn btn-primary">YAML → JSON</button>
-      </div>
-      <pre id="converted" class="mt-2 p-2 border rounded h-28 overflow-auto bg-gray-100"></pre>
-    </div>
-
-    <div class="card">
-      <h2 class="font-bold mb-2">Calculateur de RAM</h2>
-      <input type="number" id="playerCount" value="20" class="input-field w-full p-2 mb-2" />
-      <button id="calcRam" class="btn btn-primary">Calculer</button>
-      <div id="ramResult" class="mt-2 p-2 border rounded bg-gray-100">—</div>
-    </div>
-
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-  <script>
-    const user = localStorage.getItem('user');
-    const userDisplay = document.getElementById('userDisplay');
-    const logoutBtn = document.getElementById('logoutBtn');
-    if(!user) { window.location.href = 'login.html'; } else { userDisplay.textContent = user; }
-    logoutBtn.addEventListener('click', () => { localStorage.removeItem('user'); window.location.href = 'login.html'; });
-
-    const body = document.getElementById('body');
-    document.getElementById('toggleDark').addEventListener('click', () => { body.classList.toggle('dark-mode'); });
-
-    const motdInput = document.getElementById('motdInput');
-    const motdPreview = document.getElementById('motdPreview');
-    motdInput.addEventListener('input', () => { motdPreview.textContent = motdInput.value; });
-
-    const configInput = document.getElementById('configInput');
-    const converted = document.getElementById('converted');
-    document.getElementById('jsonToYaml').addEventListener('click', () => { try { const obj = JSON.parse(configInput.value); converted.textContent = jsyaml.dump(obj); } catch(e){ converted.textContent = 'Erreur: '+e.message; }});
-    document.getElementById('yamlToJson').addEventListener('click', () => { try { const obj = jsyaml.load(configInput.value); converted.textContent = JSON.stringify(obj,null,2); } catch(e){ converted.textContent = 'Erreur: '+e.message; }});
-
-    const playerCount = document.getElementById('playerCount');
-    const ramResult = document.getElementById('ramResult');
-    document.getElementById('calcRam').addEventListener('click', () => { const base = 512; const per = 80; const count = parseInt(playerCount.value)||20; ramResult.textContent = (base + per*count)+' MB'; });
-  </script>
-
+<body>
+  <div class=\login-container\    <h1>Se connecter</h1>
+    <a class=\discord-btn\       href=\https://discord.com/api/oauth2/authorize?client_id=VOTRE_CLIENT_ID&amp;redirect_uri=VOTRE_REDIRECT_URI&amp;response_type=code&amp;scope=identify\      Se connecter avec Discord
+    </a>
+  </div>
 </body>
 </html>
