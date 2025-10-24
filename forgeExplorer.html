@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Multiverse — Analyseur de plugins Modrinth</title>
+<title>Modrinth Explorer</title>
 <style>
 body { background:#0b1020;color:#e6eef8;font-family:sans-serif;padding:20px; }
-input, button { padding:8px;margin:4px; }
-.panel { background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;margin-top:12px; }
+input { padding:8px;margin:4px;width:300px; }
+button { padding:6px;margin:2px; }
+.panel { background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;margin-top:12px; max-height:70vh; overflow-y:auto; }
 .plugin-item { margin:4px 0; }
 .plugin-item span { font-weight:bold; }
 .plugin-item a { color:#90caf9; text-decoration:none; margin-left:4px; }
@@ -15,105 +16,86 @@ input, button { padding:8px;margin:4px; }
 </style>
 </head>
 <body>
-<h1>Multiverse — Analyseur de plugins Modrinth</h1>
-
+<h1>Modrinth Explorer — Tous les plugins</h1>
 <div>
-  <input id="serverInput" type="text" placeholder="Nom ou IP du serveur">
-  <button id="scanBtn">Scanner</button>
-  <button id="manualBtn">Ajouter plugin manuellement</button>
-  <button id="clearBtn">Effacer</button>
+  <input id="searchInput" type="text" placeholder="Rechercher un plugin par nom">
+  <button id="refreshBtn">Actualiser la liste</button>
 </div>
 
 <div class="panel">
-  <h3>Plugins détectés</h3>
-  <div id="pluginsList">Aucun plugin listé.</div>
+  <div id="pluginsList">Chargement en cours…</div>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
 let plugins = [];
 
-// Afficher la liste
-function renderPlugins(){
+// Affichage et filtrage
+function renderPlugins(filter=''){
   const out = $('pluginsList');
-  if(!plugins.length){ out.innerHTML='Aucun plugin listé.'; return; }
-  out.innerHTML = plugins.map((p,i)=>`
+  const filtered = plugins.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+  if(!filtered.length){ out.innerHTML='Aucun plugin trouvé.'; return; }
+  out.innerHTML = filtered.map((p,i)=>`
     <div class="plugin-item">
       <span>${p.name}</span> (v:${p.version || '-'})
       ${p.description ? '- '+p.description : ''}
-      ${p.url ? `<a href="${p.url}" target="_blank">Modrinth</a>` : ''}
-      <button onclick="removePlugin(${i})">Supprimer</button>
-      ${p.modrinthId ? `<button onclick="downloadPlugin('${p.modrinthId}')">Télécharger</button>` : ''}
+      <a href="${p.url}" target="_blank">Modrinth</a>
+      <button onclick="downloadPlugin('${p.modrinthId}')">Télécharger</button>
     </div>
   `).join('');
 }
 
-// Ajouter manuellement
-function addManualPlugin(){
-  const name = prompt('Nom du plugin :');
-  if(!name) return;
-  const version = prompt('Version (optionnelle) :');
-  const desc = prompt('Description (optionnelle) :');
-  const url = prompt('Lien Modrinth (optionnel) :');
-  const modrinthId = prompt('ID Modrinth (optionnel) :');
-  plugins.push({name, version, description:desc, url, modrinthId});
-  renderPlugins();
-}
-
-// Supprimer plugin
-function removePlugin(idx){
-  plugins.splice(idx,1);
-  renderPlugins();
-}
-
-// Télécharger plugin via API Modrinth
+// Télécharger plugin
 async function downloadPlugin(modrinthId){
   try{
     const res = await fetch(`https://api.modrinth.com/v2/project/${modrinthId}/version`);
     const data = await res.json();
     if(!data.length) return alert('Aucune version trouvée.');
-    // On prend le premier fichier de la version la plus récente
     const fileUrl = data[0].files[0]?.url;
     if(!fileUrl) return alert('Fichier introuvable.');
-    window.open(fileUrl,'_blank'); // ouvre le lien pour téléchargement
+    window.open(fileUrl,'_blank');
   }catch(e){
     console.error(e);
     alert('Erreur lors du téléchargement.');
   }
 }
 
-// Simuler scan via Modrinth API (recherche par nom)
-async function scanServer(name){
-  if(!name) return alert('Entrer un nom/IP de serveur.');
+// Charger tous les plugins (paged API)
+async function loadPlugins(){
   plugins = [];
-  renderPlugins();
+  $('pluginsList').textContent = 'Chargement en cours…';
   try{
-    const res = await fetch(`https://api.modrinth.com/v2/projects?query=${encodeURIComponent(name)}&limit=5`);
-    const data = await res.json();
-    if(data.hits && data.hits.length){
-      plugins = data.hits.map(hit => ({
+    let page = 0;
+    const limit = 50; // nombre max par page
+    let totalPages = 1;
+    while(page < totalPages){
+      const res = await fetch(`https://api.modrinth.com/v2/projects?limit=${limit}&offset=${page*limit}&facets=["mod"]`);
+      const data = await res.json();
+      if(!data.hits) break;
+      totalPages = Math.ceil(data.total_hits / limit);
+      const pagePlugins = data.hits.map(hit => ({
         name: hit.title,
         version: hit.latest_version,
         description: hit.description,
         url: `https://modrinth.com/plugin/${hit.slug}`,
         modrinthId: hit.id
       }));
+      plugins.push(...pagePlugins);
+      page++;
     }
-    renderPlugins();
+    renderPlugins($('searchInput').value);
   }catch(e){
     console.error(e);
-    alert('Erreur lors de la recherche Modrinth.');
+    $('pluginsList').textContent='Erreur lors du chargement.';
   }
 }
 
 // Événements
-$('scanBtn').addEventListener('click', ()=>scanServer($('serverInput').value));
-$('manualBtn').addEventListener('click', addManualPlugin);
-$('clearBtn').addEventListener('click', ()=>{
-  plugins=[];
-  $('serverInput').value='';
-  renderPlugins();
-});
+$('searchInput').addEventListener('input', ()=>renderPlugins($('searchInput').value));
+$('refreshBtn').addEventListener('click', loadPlugins);
+
+// Chargement initial
+loadPlugins();
 </script>
 </body>
 </html>
