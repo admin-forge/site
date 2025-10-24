@@ -12,6 +12,17 @@
   --primary: #2e7d32;
   --card-bg: #fff;
   --hover: #1b5e20;
+  --discord: #5865F2;
+  --discord-hover: #4752C4;
+}
+[data-theme="dark"] {
+  --bg: #121212;
+  --text: #eee;
+  --primary: #81c784;
+  --card-bg: #1e1e1e;
+  --hover: #4caf50;
+  --discord: #5865F2;
+  --discord-hover: #4752C4;
 }
 body {
   margin:0; font-family:'Roboto',sans-serif; background:var(--bg); color:var(--text); line-height:1.6;
@@ -21,11 +32,19 @@ header {
 }
 .logo { font-weight:700; font-size:1.5rem; color:var(--primary); }
 nav a { margin-left:1rem; color:var(--text); text-decoration:none; font-weight:500; }
-.main-btn {
-  padding:.75rem 1.5rem; background:var(--primary); color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:600;
+.toggle-btn {
+  background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--text);
+}
+.main-btn, .discord-btn, .logout-btn {
+  padding:.75rem 1.5rem; font-weight:600; border:none; border-radius:6px; cursor:pointer; text-decoration:none; display:inline-block;
   transition: background 0.3s ease, transform 0.3s ease;
 }
+.main-btn { background:var(--primary); color:#fff; }
 .main-btn:hover { background:var(--hover); transform:scale(1.05); }
+.discord-btn { background:var(--discord); color:#fff; }
+.discord-btn:hover { background:var(--discord-hover); transform:scale(1.05); }
+.logout-btn { background:#f44336; color:#fff; }
+.logout-btn:hover { background:#d32f2f; transform:scale(1.05); }
 main { max-width:1200px; margin:2rem auto; padding:0 1rem; text-align:center; }
 .hero h1 { font-size:2.5rem; margin-bottom:1rem; color:var(--primary); }
 section { margin-bottom:3rem; }
@@ -35,10 +54,13 @@ section h2 { font-size:2rem; margin-bottom:1rem; color:var(--primary); }
 .card h3 { margin-bottom:.5rem; font-size:1.2rem; }
 .card p { font-size:.95rem; margin-bottom:.75rem; }
 .card a { font-weight:500; color:var(--primary); text-decoration:none; }
+.user-info img { width:80px; border-radius:50%; margin:1rem 0; border:2px solid var(--primary);}
+.user-info p { font-size:1.2rem; font-weight:500; margin:0.5rem 0; }
 footer { text-align:center; padding:2rem 1rem; background:var(--card-bg); margin-top:2rem; }
 </style>
 </head>
-<body>
+<body data-theme="light">
+
 <header>
   <div class="logo">MC Admin Forge</div>
   <nav>
@@ -48,14 +70,19 @@ footer { text-align:center; padding:2rem 1rem; background:var(--card-bg); margin
     <a href="#assistant">Assistant IA</a>
     <a href="#support">Support</a>
     <a href="#contributors">Contributeurs</a>
+    <button class="toggle-btn" id="themeToggle">🌓</button>
   </nav>
 </header>
 
 <main>
   <section id="home" class="hero">
     <h1>Votre assistant pour gérer un serveur Minecraft</h1>
-    <p>Connectez-vous pour accéder à toutes les fonctionnalités :</p>
-    <a class="main-btn" href="login.html">Se connecter avec Discord</a>
+    <div id="loginContent">
+      <a class="discord-btn"
+         href="https://discord.com/oauth2/authorize?client_id=1324712992910213150&response_type=code&redirect_uri=https%3A%2F%2Fadmin-forge.github.io%2Fsite%2Findex.html&scope=email+guilds.join">
+        Se connecter avec Discord
+      </a>
+    </div>
   </section>
 
   <section id="guides">
@@ -76,37 +103,6 @@ footer { text-align:center; padding:2rem 1rem; background:var(--card-bg); margin
         <p>Lag, TPS, mémoire, versions 1.8 → 1.20</p>
         <a href="#">Voir les articles →</a>
       </div>
-      <div class="card">
-        <h3>Sécurité</h3>
-        <p>Auth, anti-crash, firewall</p>
-        <a href="#">Voir les articles →</a>
-      </div>
-    </div>
-  </section>
-
-  <section id="tools">
-    <h2>Outils en ligne</h2>
-    <div class="cards">
-      <div class="card">
-        <h3>Générateur de MOTD</h3>
-        <a href="#">Lancer →</a>
-      </div>
-      <div class="card">
-        <h3>Convertisseur config.yml ↔ JSON</h3>
-        <a href="#">Lancer →</a>
-      </div>
-      <div class="card">
-        <h3>Compatibilité plugin/MC</h3>
-        <a href="#">Tester →</a>
-      </div>
-      <div class="card">
-        <h3>Calculateur de RAM</h3>
-        <a href="#">Calculer →</a>
-      </div>
-      <div class="card">
-        <h3>Testeur de latence</h3>
-        <a href="#">Tester →</a>
-      </div>
     </div>
   </section>
 </main>
@@ -114,5 +110,50 @@ footer { text-align:center; padding:2rem 1rem; background:var(--card-bg); margin
 <footer>
   <p>© 2024 MC Admin Forge • Mode clair/sombre disponible</p>
 </footer>
+
+<script>
+// Thème sombre / clair
+const themeBtn = document.getElementById('themeToggle');
+themeBtn.addEventListener('click', () => {
+  const html = document.documentElement;
+  html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+});
+
+// Login Discord
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
+const loginContent = document.getElementById('loginContent');
+
+function showUser(user) {
+  loginContent.innerHTML = `
+    <div class="user-info">
+      <p>Connecté avec Discord !</p>
+      <img src="${user.avatar}" alt="Avatar">
+      <p>Pseudo : ${user.username}</p>
+      <button class="logout-btn" id="logoutBtn">Se déconnecter</button>
+    </div>
+  `;
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    loginContent.innerHTML = `
+      <a class="discord-btn"
+         href="https://discord.com/oauth2/authorize?client_id=1324712992910213150&response_type=code&redirect_uri=https%3A%2F%2Fadmin-forge.github.io%2Fsite%2Findex.html&scope=email+guilds.join">
+        Se connecter avec Discord
+      </a>
+    `;
+  });
+}
+
+// Si code présent
+if(code){
+  const simulatedUser = {
+    username: "TestUser",
+    avatar: "https://cdn.discordapp.com/avatars/81384788765712384/2b5bfa9e7a6bb05d6c1e.png?size=128"
+  };
+  showUser(simulatedUser);
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+</script>
+
 </body>
 </html>
