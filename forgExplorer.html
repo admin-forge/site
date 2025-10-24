@@ -3,23 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Modrinth Explorer</title>
-<style>
-body { background:#0b1020;color:#e6eef8;font-family:sans-serif;padding:20px; }
-input { padding:8px;margin:4px;width:300px; }
-button { padding:6px;margin:2px; }
-.panel { background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;margin-top:12px; max-height:70vh; overflow-y:auto; }
-.plugin-item { margin:4px 0; }
-.plugin-item span { font-weight:bold; }
-.plugin-item a { color:#90caf9; text-decoration:none; margin-left:4px; }
-.plugin-item button { margin-left:8px; }
-</style>
+<title>Forg Explorer — Modrinth & Git</title>
+<link rel="stylesheet" href="style-explorer.css">
 </head>
 <body>
-<h1>Modrinth Explorer — Tous les plugins</h1>
+<h1>Forg Explorer — Plugins Modrinth & Git</h1>
+
 <div>
   <input id="searchInput" type="text" placeholder="Rechercher un plugin par nom">
-  <button id="refreshBtn">Actualiser la liste</button>
+  <button id="refreshBtn">Actualiser</button>
 </div>
 
 <div class="panel">
@@ -30,22 +22,23 @@ button { padding:6px;margin:2px; }
 const $ = id => document.getElementById(id);
 let plugins = [];
 
-// Affichage et filtrage
+// Affichage filtré
 function renderPlugins(filter=''){
   const out = $('pluginsList');
   const filtered = plugins.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
   if(!filtered.length){ out.innerHTML='Aucun plugin trouvé.'; return; }
-  out.innerHTML = filtered.map((p,i)=>`
+  out.innerHTML = filtered.map(p=>`
     <div class="plugin-item">
       <span>${p.name}</span> (v:${p.version || '-'})
       ${p.description ? '- '+p.description : ''}
       <a href="${p.url}" target="_blank">Modrinth</a>
       <button onclick="downloadPlugin('${p.modrinthId}')">Télécharger</button>
+      ${p.gitHash ? `<button onclick="fetchGitInfo('${p.gitHash}')">Git</button>` : ''}
     </div>
   `).join('');
 }
 
-// Télécharger plugin
+// Télécharger plugin depuis Modrinth
 async function downloadPlugin(modrinthId){
   try{
     const res = await fetch(`https://api.modrinth.com/v2/project/${modrinthId}/version`);
@@ -60,16 +53,30 @@ async function downloadPlugin(modrinthId){
   }
 }
 
-// Charger tous les plugins (paged API)
-async function loadPlugins(){
+// Récupérer les infos Git via l’API (hash fourni)
+async function fetchGitInfo(gitHash){
+  try {
+    // Remplace l’URL ci-dessous par ton endpoint réel
+    const res = await fetch(`https://ton-api-git.exemple.com/plugin/${gitHash}`);
+    if(!res.ok) throw new Error('Erreur API Git');
+    const data = await res.json();
+    alert(`Plugin Git Info:\nNom: ${data.name}\nDernière version: ${data.version}`);
+  } catch(e) {
+    console.error(e);
+    alert('Impossible de récupérer les infos Git.');
+  }
+}
+
+// Charger les plugins Modrinth (paged)
+async function loadPlugins(query=''){
   plugins = [];
-  $('pluginsList').textContent = 'Chargement en cours…';
+  $('pluginsList').textContent='Chargement en cours…';
   try{
     let page = 0;
-    const limit = 50; // nombre max par page
+    const limit = 50;
     let totalPages = 1;
     while(page < totalPages){
-      const res = await fetch(`https://api.modrinth.com/v2/projects?limit=${limit}&offset=${page*limit}&facets=["mod"]`);
+      const res = await fetch(`https://api.modrinth.com/v2/projects?limit=${limit}&offset=${page*limit}&query=${encodeURIComponent(query)}`);
       const data = await res.json();
       if(!data.hits) break;
       totalPages = Math.ceil(data.total_hits / limit);
@@ -78,10 +85,12 @@ async function loadPlugins(){
         version: hit.latest_version,
         description: hit.description,
         url: `https://modrinth.com/plugin/${hit.slug}`,
-        modrinthId: hit.id
+        modrinthId: hit.id,
+        gitHash: '977de0e18a70c6d8e7e0a9fab5bff68ad08207e3' // hash par défaut
       }));
       plugins.push(...pagePlugins);
       page++;
+      if(page > 3) break; // limite ~200 plugins
     }
     renderPlugins($('searchInput').value);
   }catch(e){
@@ -92,7 +101,7 @@ async function loadPlugins(){
 
 // Événements
 $('searchInput').addEventListener('input', ()=>renderPlugins($('searchInput').value));
-$('refreshBtn').addEventListener('click', loadPlugins);
+$('refreshBtn').addEventListener('click', ()=>loadPlugins($('searchInput').value));
 
 // Chargement initial
 loadPlugins();
