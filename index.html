@@ -1,134 +1,271 @@
 <!DOCTYPE html>
-<html lang=\fr\<head>
-  <meta charset=\UTF-8\  <meta name=\viewport\ content=\width=device-width, initial-scale=1\  <title>MC Admin Forge</title>
-  <link href=\https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap\ rel=\stylesheet\  <style>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MC Admin Forge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===================== Variables ===================== */
     :root {
       --bg: #f5f5f5;
       --text: #333;
       --primary: #2e7d32;
       --card-bg: #fff;
+      --hover: #1b5e20;
+      --transition: 0.3s;
     }
-    [data-theme=\dark\ {
+    [data-theme="dark"] {
       --bg: #121212;
       --text: #eee;
       --primary: #81c784;
       --card-bg: #1e1e1e;
+      --hover: #4caf50;
     }
+
+    /* ===================== Reset ===================== */
     * {margin:0;padding:0;box-sizing:border-box;font-family:'Roboto',sans-serif;}
-    body {background:var(--bg);color:var(--text);line-height:1.6;}
-    header {display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:var(--card-bg);position:sticky;top:0;z-index:100;}
+    body {background:var(--bg);color:var(--text);line-height:1.6;transition: background var(--transition), color var(--transition);}
+    a {text-decoration:none; color:inherit; transition: color var(--transition);}
+    button {cursor:pointer; transition: background var(--transition), transform var(--transition);}
+
+    /* ===================== Header ===================== */
+    header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 2rem;
+      background:var(--card-bg);
+      position:sticky;
+      top:0;
+      z-index:100;
+      box-shadow:0 2px 8px rgba(0,0,0,0.05);
+    }
     .logo {font-weight:700;font-size:1.5rem;color:var(--primary);}
-    nav a {margin-left:1rem;color:var(--text);text-decoration:none;font-weight:500;}
-    .toggle-btn {background:none;border:none;color:var(--text);font-size:1.2rem;cursor:pointer;}
+    nav a {margin-left:1rem;color:var(--text);font-weight:500;position:relative;}
+    nav a::after {
+      content:'';
+      display:block;
+      height:2px;
+      background:var(--primary);
+      width:0;
+      transition: width var(--transition);
+      position:absolute;
+      bottom:-4px;
+      left:0;
+    }
+    nav a:hover::after {width:100%;}
+    .toggle-btn {background:none;border:none;color:var(--text);font-size:1.2rem;}
+
+    /* ===================== Main ===================== */
     main {max-width:1200px;margin:2rem auto;padding:0 1rem;}
-    .hero {text-align:center;margin-bottom:2rem;}
-    .hero h1 {font-size:2.5rem;margin-bottom:1rem;}
-    .search-bar {max-width:500px;margin:0 auto;display:flex;}
-    .search-bar input {flex:1;padding:.75rem;border:1px solid #ccc;border-radius:4px 0 0 4px;}
-    .search-bar button {padding:.75rem 1rem;border:none;background:var(--primary);color:#fff;border-radius:0 4px 4px 0;cursor:pointer;}
+    .hero {text-align:center;margin-bottom:2rem;animation: fadeIn 1s ease;}
+    .hero h1 {font-size:2.5rem;margin-bottom:1rem; background: linear-gradient(90deg, var(--primary), var(--hover)); -webkit-background-clip: text; color: transparent;}
+    .search-bar {max-width:500px;margin:0 auto;display:flex;gap:5px;}
+    .search-bar input {
+      flex:1;padding:.75rem;border:1px solid #ccc;border-radius:4px;
+      transition:border var(--transition), box-shadow var(--transition);
+    }
+    .search-bar input:focus {outline:none; border-color:var(--primary); box-shadow:0 0 5px var(--primary);}
+    .search-bar button {
+      padding:.75rem 1rem;
+      border:none;
+      background:var(--primary);
+      color:#fff;
+      border-radius:4px;
+      font-weight:600;
+    }
+    .search-bar button:hover {background:var(--hover); transform:scale(1.05);}
+
     .quick-links {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:2rem;}
-    .quick-links a {padding:1rem;background:var(--card-bg);border-radius:6px;text-align:center;text-decoration:none;color:var(--text);font-weight:500;border:1px solid #ddd;transition:transform .2s;}
-    .quick-links a:hover {transform:translateY(-3px);border-color:var(--primary);}
-    section {margin-bottom:3rem;}
-    section h2 {font-size:2rem;margin-bottom:1rem;color:var(--primary);}
+    .quick-links a {
+      padding:1rem;
+      background:var(--card-bg);
+      border-radius:6px;
+      text-align:center;
+      color:var(--text);
+      font-weight:500;
+      border:1px solid #ddd;
+      box-shadow:0 2px 4px rgba(0,0,0,0.05);
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .quick-links a:hover {
+      transform:translateY(-5px);
+      border-color:var(--primary);
+      box-shadow:0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    section {margin-bottom:3rem; animation: fadeIn 1s ease;}
+    section h2 {font-size:2rem;margin-bottom:1rem;color:var(--primary);position:relative;}
+    section h2::after {content:'';display:block;width:50px;height:3px;background:var(--primary);margin-top:5px;border-radius:2px;}
+
     .cards {display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;}
-    .card {background:var(--card-bg);padding:1rem;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,.1);}
-    .card h3 {margin-bottom:.5rem;font-size:1.2rem;}
+    .card {
+      background:var(--card-bg);
+      padding:1rem;
+      border-radius:6px;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .card:hover {transform:translateY(-5px); box-shadow:0 10px 20px rgba(0,0,0,.15);}
+    .card h3 {margin-bottom:.5rem;font-size:1.2rem;color:var(--primary);}
     .card p {font-size:.95rem;margin-bottom:.75rem;}
-    .card a {font-weight:500;color:var(--primary);text-decoration:none;}
+    .card a {font-weight:500;color:var(--primary);}
     pre {background:#272822;color:#f8f8f2;padding:1rem;border-radius:4px;overflow-x:auto;font-size:.9rem;}
-    #ai-assistant {background:var(--card-bg);padding:1rem;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,.1);}
+
+    #ai-assistant {background:var(--card-bg);padding:1rem;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+    #ai-assistant textarea {width:100%;padding:.75rem;border-radius:4px;border:1px solid #ccc;margin-bottom:.75rem;}
+    #ai-assistant button {padding:.75rem 1.5rem;border:none;background:var(--primary);color:#fff;border-radius:4px;font-weight:600;}
+    #ai-assistant button:hover {background:var(--hover);}
+
     #ticket-form input, #ticket-form textarea {width:100%;padding:.75rem;margin-bottom:.75rem;border:1px solid #ccc;border-radius:4px;}
-    #ticket-form button {padding:.75rem 1.5rem;border:none;background:var(--primary);color:#fff;border-radius:4px;cursor:pointer;}
-    footer {text-align:center;padding:2rem 1rem;background:var(--card-bg);}
-    @media(max-width:600px){.search-bar{flex-direction:column;} .search-bar input, .search-bar button{border-radius:4px;margin:2px 0;}}
+    #ticket-form button {padding:.75rem 1.5rem;border:none;background:var(--primary);color:#fff;border-radius:4px;font-weight:600;}
+    #ticket-form button:hover {background:var(--hover);}
+
+    footer {text-align:center;padding:2rem 1rem;background:var(--card-bg);box-shadow:0 -2px 8px rgba(0,0,0,.05);}
+    
+    /* ===================== Animations ===================== */
+    @keyframes fadeIn {from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ===================== Responsive ===================== */
+    @media(max-width:600px){
+      .search-bar{flex-direction:column;}
+      .search-bar input, .search-bar button{border-radius:4px;margin:2px 0;}
+    }
   </style>
 </head>
-<body data-theme=\light\  <header>
-    <div class=\logo\MC Admin Forge</div>
+<body data-theme="light">
+  <header>
+    <div class="logo">MC Admin Forge</div>
     <nav>
-      <a href=\home\Accueil</a>
-      <a href=\guides\Guides</a>
-      <a href=\tools\Outils</a>
-      <a href=\assistant\Assistant IA</a>
-      <a href=\support\Support</a>
-      <a href=\contributors\Contributeurs</a>
-      <button class=\toggle-btn\ id=\theme-toggle\🌓</button>
+      <a href="#home">Accueil</a>
+      <a href="#guides">Guides</a>
+      <a href="#tools">Outils</a>
+      <a href="#assistant">Assistant IA</a>
+      <a href="#support">Support</a>
+      <a href="#contributors">Contributeurs</a>
+      <button class="toggle-btn" id="theme-toggle">🌓</button>
     </nav>
   </header>
+
   <main>
-    <section id=\home\ class=\hero\      <h1>Votre assistant pour gérer un serveur Minecraft</h1>
-      <div class=\search-bar\        <input type=\text\ placeholder=\Rechercher un plugin, une erreur, ou un tuto…\        <button>🔍</button>
+    <section id="home" class="hero">
+      <h1>Votre assistant pour gérer un serveur Minecraft</h1>
+      <div class="search-bar">
+        <input type="text" placeholder="Rechercher un plugin, une erreur, ou un tuto…">
+        <button>🔍</button>
       </div>
-      <div class=\quick-links\        <a href=\Créer un serveur</a>
-        <a href=\Configurer BungeeCord</a>
-        <a href=\Corriger une erreur</a>
-        <a href=\Optimiser les performances</a>
+      <div class="quick-links">
+        <a href="#">Créer un serveur</a>
+        <a href="#">Configurer BungeeCord</a>
+        <a href="#">Corriger une erreur</a>
+        <a href="#">Optimiser les performances</a>
       </div>
     </section>
-    <section id=\guides\      <h2>Guides & Tutoriels</h2>
-      <div class=\cards\        <div class=\card\          <h3>Installation</h3>
+
+    <section id="guides">
+      <h2>Guides & Tutoriels</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Installation</h3>
           <p>Spigot, Paper, BungeeCord, Velocity</p>
-          <a href=\Voir les articles →</a>
+          <a href="#">Voir les articles →</a>
         </div>
-        <div class=\card\          <h3>Configuration</h3>
+        <div class="card">
+          <h3>Configuration</h3>
           <p>Permissions, ranks, anti-cheat, scoreboard…</p>
-          <a href=\Voir les articles →</a>
+          <a href="#">Voir les articles →</a>
         </div>
-        <div class=\card\          <h3>Optimisation</h3>
+        <div class="card">
+          <h3>Optimisation</h3>
           <p>Lag, TPS, mémoire, versions 1.8 → 1.20</p>
-          <a href=\Voir les articles →</a>
+          <a href="#">Voir les articles →</a>
         </div>
-        <div class=\card\          <h3>Sécurité</h3>
+        <div class="card">
+          <h3>Sécurité</h3>
           <p>Auth, anti-crash, firewall</p>
-          <a href=\Voir les articles →</a>
+          <a href="#">Voir les articles →</a>
         </div>
-        <div class=\card\          <h3>Gestion</h3>
+        <div class="card">
+          <h3>Gestion</h3>
           <p>Staff, économie, boutique</p>
-          <a href=\Voir les articles →</a>
+          <a href="#">Voir les articles →</a>
         </div>
       </div>
     </section>
-    <section id=\tools\      <h2>Outils en ligne</h2>
-      <div class=\cards\        <div class=\card\h3>Générateur de MOTD</h3><a href=\Lancer →</a></div>
-        <div class=\card\h3>Convertisseur config.yml ↔ JSON</h3><a href=\Lancer →</a></div>
-        <div class=\card\h3>Compatibilité plugin/MC</h3><a href=\Tester →</a></div>
-        <div class=\card\h3>Calculateur de RAM</h3><a href=\Calculer →</a></div>
-        <div class=\card\h3>Testeur de latence</h3><a href=\Tester →</a></div>
+
+    <section id="tools">
+      <h2>Outils en ligne</h2>
+      <div class="cards">
+        <div class="card"><h3>Générateur de MOTD</h3><a href="#">Lancer →</a></div>
+        <div class="card"><h3>Convertisseur config.yml ↔ JSON</h3><a href="#">Lancer →</a></div>
+        <div class="card"><h3>Compatibilité plugin/MC</h3><a href="#">Tester →</a></div>
+        <div class="card"><h3>Calculateur de RAM</h3><a href="#">Calculer →</a></div>
+        <div class="card"><h3>Testeur de latence</h3><a href="#">Tester →</a></div>
       </div>
     </section>
-    <section id=\assistant\      <h2>Assistant IA intégré</h2>
-      <div id=\ai-assistant\        <p>Posez une question ou copiez-collez vos logs pour obtenir de l'aide.</p>
-        <textarea rows=\4\ placeholder=\Entrez votre question ou vos logs...\textarea>
+
+    <section id="assistant">
+      <h2>Assistant IA intégré</h2>
+      <div id="ai-assistant">
+        <p>Posez une question ou copiez-collez vos logs pour obtenir de l'aide.</p>
+        <textarea rows="4" placeholder="Entrez votre question ou vos logs..."></textarea>
         <button>Envoyer</button>
       </div>
     </section>
-    <section id=\support\      <h2>Support communautaire</h2>
-      <form id=\ticket-form\        <input type=\text\ placeholder=\Sujet de la demande\ required>
-        <textarea rows=\5\ placeholder=\Décrivez votre problème…\ required></textarea>
-        <button type=\submit\Ouvrir un ticket</button>
+
+    <section id="support">
+      <h2>Support communautaire</h2>
+      <form id="ticket-form">
+        <input type="text" placeholder="Sujet de la demande" required>
+        <textarea rows="5" placeholder="Décrivez votre problème…" required></textarea>
+        <button type="submit">Ouvrir un ticket</button>
       </form>
-      <div style=\margin-top:2rem;\        <iframe src=\https://discord.com/widget?id=YOUR_DISCORD_SERVER_ID&theme=light\ width=\100%\ height=\300\ allowtransparency=\true\ frameborder=\0\iframe>
+      <div style="margin-top:2rem;">
+        <iframe src="https://discord.com/widget?id=YOUR_DISCORD_SERVER_ID&theme=light" width="100%" height="300" allowtransparency="true" frameborder="0"></iframe>
       </div>
     </section>
-    <section id=\contributors\      <h2>Espace contributeurs</h2>
-      <div class=\cards\        <div class=\card\          <h3>AdminExpert</h3><p>150 articles publiés</p>
+
+    <section id="contributors">
+      <h2>Espace contributeurs</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>AdminExpert</h3><p>150 articles publiés</p>
         </div>
-        <div class=\card\          <h3>BuildMaster</h3><p>120 articles publiés</p>
+        <div class="card">
+          <h3>BuildMaster</h3><p>120 articles publiés</p>
         </div>
-        <div class=\card\          <h3>SecuGuard</h3><p>100 articles publiés</p>
+        <div class="card">
+          <h3>SecuGuard</h3><p>100 articles publiés</p>
         </div>
       </div>
     </section>
   </main>
+
   <footer>
-    <p>© 2024 MC Admin Forge • <a href=\API publique</a> • Mode clair/sombre disponible</p>
+    <p>© 2024 MC Admin Forge • <a href="#">API publique</a> • Mode clair/sombre disponible</p>
   </footer>
+
   <script>
+    // ========== Theme toggle ==========
     const btn = document.getElementById('theme-toggle');
     btn.addEventListener('click', () => {
       const html = document.documentElement;
       html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+    });
+
+    // ========== Smooth scroll ==========
+    document.querySelectorAll('nav a').forEach(anchor => {
+      anchor.addEventListener('click', function(e){
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({behavior:'smooth'});
+      });
+    });
+
+    // ========== AI Assistant interaction ==========
+    const aiBtn = document.querySelector('#ai-assistant button');
+    aiBtn.addEventListener('click', () => {
+      alert('Assistant IA: Cette fonctionnalité sera bientôt disponible ! 🚀');
     });
   </script>
 </body>
