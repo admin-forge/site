@@ -1,88 +1,135 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MC Admin Forge - Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
-  <style>
-    body { font-family: 'Poppins', sans-serif; background-color: #111827; color: #f3f4f6; }
-    .btn { transition: 0.3s; padding: 0.5rem 1rem; border-radius: 0.5rem; }
-    .btn-primary { background: #10b981; color: white; }
-    .btn-primary:hover { background: #059669; }
-    .btn-logout { background: #ef4444; color: white; }
-    .btn-logout:hover { background: #dc2626; }
-    .card { background: #1f2937; padding: 1rem; border-radius: 0.75rem; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-    .input-field { background: #1f2937; color: white; border: 1px solid #374151; border-radius: 0.5rem; padding: 0.5rem; }
-    .input-field::placeholder { color: #9ca3af; }
+<html lang=\fr\<head>
+  <meta charset=\UTF-8\  <meta name=\viewport\ content=\width=device-width, initial-scale=1\  <title>MC Admin Forge</title>
+  <link href=\https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap\ rel=\stylesheet\  <style>
+    :root {
+      --bg: #f5f5f5;
+      --text: #333;
+      --primary: #2e7d32;
+      --card-bg: #fff;
+    }
+    [data-theme=\dark\ {
+      --bg: #121212;
+      --text: #eee;
+      --primary: #81c784;
+      --card-bg: #1e1e1e;
+    }
+    * {margin:0;padding:0;box-sizing:border-box;font-family:'Roboto',sans-serif;}
+    body {background:var(--bg);color:var(--text);line-height:1.6;}
+    header {display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:var(--card-bg);position:sticky;top:0;z-index:100;}
+    .logo {font-weight:700;font-size:1.5rem;color:var(--primary);}
+    nav a {margin-left:1rem;color:var(--text);text-decoration:none;font-weight:500;}
+    .toggle-btn {background:none;border:none;color:var(--text);font-size:1.2rem;cursor:pointer;}
+    main {max-width:1200px;margin:2rem auto;padding:0 1rem;}
+    .hero {text-align:center;margin-bottom:2rem;}
+    .hero h1 {font-size:2.5rem;margin-bottom:1rem;}
+    .search-bar {max-width:500px;margin:0 auto;display:flex;}
+    .search-bar input {flex:1;padding:.75rem;border:1px solid #ccc;border-radius:4px 0 0 4px;}
+    .search-bar button {padding:.75rem 1rem;border:none;background:var(--primary);color:#fff;border-radius:0 4px 4px 0;cursor:pointer;}
+    .quick-links {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:2rem;}
+    .quick-links a {padding:1rem;background:var(--card-bg);border-radius:6px;text-align:center;text-decoration:none;color:var(--text);font-weight:500;border:1px solid #ddd;transition:transform .2s;}
+    .quick-links a:hover {transform:translateY(-3px);border-color:var(--primary);}
+    section {margin-bottom:3rem;}
+    section h2 {font-size:2rem;margin-bottom:1rem;color:var(--primary);}
+    .cards {display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;}
+    .card {background:var(--card-bg);padding:1rem;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,.1);}
+    .card h3 {margin-bottom:.5rem;font-size:1.2rem;}
+    .card p {font-size:.95rem;margin-bottom:.75rem;}
+    .card a {font-weight:500;color:var(--primary);text-decoration:none;}
+    pre {background:#272822;color:#f8f8f2;padding:1rem;border-radius:4px;overflow-x:auto;font-size:.9rem;}
+    #ai-assistant {background:var(--card-bg);padding:1rem;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,.1);}
+    #ticket-form input, #ticket-form textarea {width:100%;padding:.75rem;margin-bottom:.75rem;border:1px solid #ccc;border-radius:4px;}
+    #ticket-form button {padding:.75rem 1.5rem;border:none;background:var(--primary);color:#fff;border-radius:4px;cursor:pointer;}
+    footer {text-align:center;padding:2rem 1rem;background:var(--card-bg);}
+    @media(max-width:600px){.search-bar{flex-direction:column;} .search-bar input, .search-bar button{border-radius:4px;margin:2px 0;}}
   </style>
 </head>
-<body class="p-4">
-
-  <header class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-green-500">MC Admin Forge</h1>
-    <div class="flex gap-2">
-      <span id="userDisplay" class="font-semibold"></span>
-      <button id="logoutBtn" class="btn btn-logout">Déconnexion</button>
-    </div>
+<body data-theme=\light\  <header>
+    <div class=\logo\MC Admin Forge</div>
+    <nav>
+      <a href=\home\Accueil</a>
+      <a href=\guides\Guides</a>
+      <a href=\tools\Outils</a>
+      <a href=\assistant\Assistant IA</a>
+      <a href=\support\Support</a>
+      <a href=\contributors\Contributeurs</a>
+      <button class=\toggle-btn\ id=\theme-toggle\🌓</button>
+    </nav>
   </header>
-
-  <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-    <div class="card">
-      <h2 class="font-bold mb-2">Générateur de MOTD</h2>
-      <input type="text" id="motdInput" placeholder="Tapez votre MOTD" class="input-field w-full p-2 mb-2" />
-      <div id="motdPreview" class="p-2 border rounded h-20 bg-gray-800"></div>
-    </div>
-
-    <div class="card">
-      <h2 class="font-bold mb-2">Convertisseur YAML ↔ JSON</h2>
-      <textarea id="configInput" class="input-field w-full h-28 p-2 mb-2"></textarea>
-      <div class="flex gap-2">
-        <button id="jsonToYaml" class="btn btn-primary">JSON → YAML</button>
-        <button id="yamlToJson" class="btn btn-primary">YAML → JSON</button>
+  <main>
+    <section id=\home\ class=\hero\      <h1>Votre assistant pour gérer un serveur Minecraft</h1>
+      <div class=\search-bar\        <input type=\text\ placeholder=\Rechercher un plugin, une erreur, ou un tuto…\        <button>🔍</button>
       </div>
-      <pre id="converted" class="mt-2 p-2 border rounded h-28 overflow-auto bg-gray-800"></pre>
-    </div>
-
-    <div class="card">
-      <h2 class="font-bold mb-2">Calculateur de RAM</h2>
-      <input type="number" id="playerCount" value="20" class="input-field w-full p-2 mb-2" />
-      <button id="calcRam" class="btn btn-primary">Calculer</button>
-      <div id="ramResult" class="mt-2 p-2 border rounded bg-gray-800">—</div>
-    </div>
-
+      <div class=\quick-links\        <a href=\Créer un serveur</a>
+        <a href=\Configurer BungeeCord</a>
+        <a href=\Corriger une erreur</a>
+        <a href=\Optimiser les performances</a>
+      </div>
+    </section>
+    <section id=\guides\      <h2>Guides & Tutoriels</h2>
+      <div class=\cards\        <div class=\card\          <h3>Installation</h3>
+          <p>Spigot, Paper, BungeeCord, Velocity</p>
+          <a href=\Voir les articles →</a>
+        </div>
+        <div class=\card\          <h3>Configuration</h3>
+          <p>Permissions, ranks, anti-cheat, scoreboard…</p>
+          <a href=\Voir les articles →</a>
+        </div>
+        <div class=\card\          <h3>Optimisation</h3>
+          <p>Lag, TPS, mémoire, versions 1.8 → 1.20</p>
+          <a href=\Voir les articles →</a>
+        </div>
+        <div class=\card\          <h3>Sécurité</h3>
+          <p>Auth, anti-crash, firewall</p>
+          <a href=\Voir les articles →</a>
+        </div>
+        <div class=\card\          <h3>Gestion</h3>
+          <p>Staff, économie, boutique</p>
+          <a href=\Voir les articles →</a>
+        </div>
+      </div>
+    </section>
+    <section id=\tools\      <h2>Outils en ligne</h2>
+      <div class=\cards\        <div class=\card\h3>Générateur de MOTD</h3><a href=\Lancer →</a></div>
+        <div class=\card\h3>Convertisseur config.yml ↔ JSON</h3><a href=\Lancer →</a></div>
+        <div class=\card\h3>Compatibilité plugin/MC</h3><a href=\Tester →</a></div>
+        <div class=\card\h3>Calculateur de RAM</h3><a href=\Calculer →</a></div>
+        <div class=\card\h3>Testeur de latence</h3><a href=\Tester →</a></div>
+      </div>
+    </section>
+    <section id=\assistant\      <h2>Assistant IA intégré</h2>
+      <div id=\ai-assistant\        <p>Posez une question ou copiez-collez vos logs pour obtenir de l'aide.</p>
+        <textarea rows=\4\ placeholder=\Entrez votre question ou vos logs...\textarea>
+        <button>Envoyer</button>
+      </div>
+    </section>
+    <section id=\support\      <h2>Support communautaire</h2>
+      <form id=\ticket-form\        <input type=\text\ placeholder=\Sujet de la demande\ required>
+        <textarea rows=\5\ placeholder=\Décrivez votre problème…\ required></textarea>
+        <button type=\submit\Ouvrir un ticket</button>
+      </form>
+      <div style=\margin-top:2rem;\        <iframe src=\https://discord.com/widget?id=YOUR_DISCORD_SERVER_ID&theme=light\ width=\100%\ height=\300\ allowtransparency=\true\ frameborder=\0\iframe>
+      </div>
+    </section>
+    <section id=\contributors\      <h2>Espace contributeurs</h2>
+      <div class=\cards\        <div class=\card\          <h3>AdminExpert</h3><p>150 articles publiés</p>
+        </div>
+        <div class=\card\          <h3>BuildMaster</h3><p>120 articles publiés</p>
+        </div>
+        <div class=\card\          <h3>SecuGuard</h3><p>100 articles publiés</p>
+        </div>
+      </div>
+    </section>
   </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <footer>
+    <p>© 2024 MC Admin Forge • <a href=\API publique</a> • Mode clair/sombre disponible</p>
+  </footer>
   <script>
-    // Gestion de session
-    const user = localStorage.getItem('user');
-    if(!user) { window.location.href = 'login.html'; } else { document.getElementById('userDisplay').textContent = user; }
-
-    // Déconnexion
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
+    const btn = document.getElementById('theme-toggle');
+    btn.addEventListener('click', () => {
+      const html = document.documentElement;
+      html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
     });
-
-    // MOTD
-    const motdInput = document.getElementById('motdInput');
-    const motdPreview = document.getElementById('motdPreview');
-    motdInput.addEventListener('input', () => { motdPreview.textContent = motdInput.value; });
-
-    // YAML ↔ JSON
-    const configInput = document.getElementById('configInput');
-    const converted = document.getElementById('converted');
-    document.getElementById('jsonToYaml').addEventListener('click', () => { try { const obj = JSON.parse(configInput.value); converted.textContent = jsyaml.dump(obj); } catch(e){ converted.textContent = 'Erreur: '+e.message; }});
-    document.getElementById('yamlToJson').addEventListener('click', () => { try { const obj = jsyaml.load(configInput.value); converted.textContent = JSON.stringify(obj,null,2); } catch(e){ converted.textContent = 'Erreur: '+e.message; }});
-
-    // Calcul RAM
-    const playerCount = document.getElementById('playerCount');
-    const ramResult = document.getElementById('ramResult');
-    document.getElementById('calcRam').addEventListener('click', () => { const base = 512; const per = 80; const count = parseInt(playerCount.value)||20; ramResult.textContent = (base + per*count)+' MB'; });
   </script>
-
 </body>
 </html>
