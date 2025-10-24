@@ -4,164 +4,90 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel - MC Admin Forge</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin-style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <div class="logo">MC Admin Forge - Admin</div>
-  <nav>
-    <button id="themeToggle">🌓 Thème</button>
-  </nav>
-</header>
-
 <main>
-  <section id="loginSection" class="card">
-    <h3>Connexion Discord</h3>
-    <div id="loginContent">
-      <a class="discord-btn"
-         href="https://discord.com/oauth2/authorize?client_id=1324712992910213150&response_type=code&redirect_uri=https%3A%2F%2Fadmin-forge.github.io%2Fsite%2Fadmin.html&scope=email+guilds.join">
-        Se connecter
-      </a>
+  <section class="card" id="loginSection">
+    <h1>Connexion Admin</h1>
+
+    <p>Se connecter avec Discord :</p>
+    <a class="discord-btn" id="discordLogin"
+       href="https://discord.com/oauth2/authorize?client_id=1324712992910213150&response_type=code&redirect_uri=https%3A%2F%2Fadmin-forge.github.io%2Fsite%2Fadmin.html&scope=email+guilds.join">
+       Se connecter avec Discord
+    </a>
+
+    <p>Ou utilisez le mot de passe secondaire :</p>
+    <input type="password" id="adminPass" placeholder="Mot de passe secondaire">
+    <button class="main-btn" id="loginBtn">Se connecter</button>
+
+    <p class="error-msg" id="errorMsg">Mot de passe incorrect !</p>
+  </section>
+
+  <section class="card" id="dashboardSection" style="display:none;">
+    <h1>Bienvenue Admin ! 🎉</h1>
+    <div id="confettiContainer"></div>
+
+    <div class="cards">
+      <div class="card"><h3>Gérer les joueurs</h3></div>
+      <div class="card"><h3>Outils serveur</h3></div>
+      <div class="card"><h3>Tickets Support</h3></div>
+      <div class="card"><h3>Statistiques</h3></div>
+      <div class="card"><h3>Contributeurs</h3></div>
     </div>
-    <div id="welcomeMessage"></div>
-  </section>
-
-  <section class="card">
-    <h3>Guides & Tutoriels</h3>
-    <button onclick="alert('Accéder aux guides')">Gérer</button>
-  </section>
-
-  <section class="card">
-    <h3>Outils</h3>
-    <button onclick="alert('Accéder aux outils')">Gérer</button>
-  </section>
-
-  <section class="card">
-    <h3>Assistant IA</h3>
-    <button onclick="alert('Gérer l\'assistant IA')">Gérer</button>
-  </section>
-
-  <section class="card">
-    <h3>Support / Tickets</h3>
-    <button onclick="alert('Voir les tickets')">Voir</button>
-  </section>
-
-  <section class="card">
-    <h3>Contributeurs</h3>
-    <button onclick="alert('Gérer les contributeurs')">Gérer</button>
+    <button class="main-btn" id="logoutBtn">Se déconnecter</button>
   </section>
 </main>
 
-<canvas id="confetti"></canvas>
-
+<script src="header.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-// Thème sombre (pas de mode clair)
-const themeBtn = document.getElementById('themeToggle');
-themeBtn.addEventListener('click', () => {
-  document.body.classList.toggle('dark-theme');
-});
+// ==== Mot de passe secondaire ====
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const adminPass = document.getElementById('adminPass');
+const errorMsg = document.getElementById('errorMsg');
+const loginSection = document.getElementById('loginSection');
+const dashboardSection = document.getElementById('dashboardSection');
 
-// Login Discord
-const urlParams = new URLSearchParams(window.location.search);
-const code = urlParams.get('code');
-const loginContent = document.getElementById('loginContent');
-const welcomeMessage = document.getElementById('welcomeMessage');
+const CORRECT_PASS = "MonSuperMotDePasse123"; // Change ici ton mot de passe
 
-function showUser(user) {
-  loginContent.innerHTML = `
-    <div class="user-info">
-      <img src="${user.avatar}" alt="Avatar">
-      <p>Pseudo : ${user.username}</p>
-      <button class="logout-btn" id="logoutBtn">Se déconnecter</button>
-    </div>
-  `;
-  welcomeMessage.textContent = `Bienvenue, ${user.username} !`;
-  welcomeMessage.style.opacity = 1;
-  launchConfetti();
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    window.history.replaceState({}, document.title, window.location.pathname);
-    loginContent.innerHTML = `
-      <a class="discord-btn"
-         href="https://discord.com/oauth2/authorize?client_id=1324712992910213150&response_type=code&redirect_uri=https%3A%2F%2Fadmin-forge.github.io%2Fsite%2Fadmin.html&scope=email+guilds.join">
-        Se connecter
-      </a>
-    `;
-    welcomeMessage.style.opacity = 0;
-    welcomeMessage.textContent = '';
+function launchConfetti(){
+  confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { y: 0.6 }
   });
 }
 
-if(code){
-  const simulatedUser = {
-    username: "MCAdmin",
-    avatar: "https://cdn.discordapp.com/avatars/81384788765712384/2b5bfa9e7a6bb05d6c1e.png?size=128"
-  };
-  showUser(simulatedUser);
-  window.history.replaceState({}, document.title, window.location.pathname);
-}
-
-// Confettis 🎉
-const canvas = document.getElementById("confetti");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-let confettiParticles = [];
-
-function createConfetti() {
-  const colors = ["#ff0a54","#ff477e","#ff7096","#ff85a1","#fbb1b9","#f9bec7"];
-  for(let i=0;i<150;i++){
-    confettiParticles.push({
-      x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height - canvas.height,
-      r: Math.random()*6+2,
-      d: Math.random()*20+10,
-      color: colors[Math.floor(Math.random()*colors.length)],
-      tilt: Math.random()*10-10
-    });
+loginBtn.addEventListener('click', ()=>{
+  if(adminPass.value === CORRECT_PASS){
+    loginSection.style.display = "none";
+    dashboardSection.style.display = "block";
+    errorMsg.style.display = "none";
+    launchConfetti();
+  } else {
+    errorMsg.style.display = "block";
   }
-}
+});
 
-function drawConfetti(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  for(let i=0;i<confettiParticles.length;i++){
-    let p = confettiParticles[i];
-    ctx.beginPath();
-    ctx.lineWidth = p.r;
-    ctx.strokeStyle = p.color;
-    ctx.moveTo(p.x + p.tilt + p.r/2, p.y);
-    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r/2);
-    ctx.stroke();
+logoutBtn.addEventListener('click', ()=>{
+  dashboardSection.style.display = "none";
+  loginSection.style.display = "block";
+  adminPass.value = "";
+});
+
+// ==== Connexion Discord automatique si code présent ====
+window.addEventListener('load', ()=>{
+  const urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.has('code')){
+    loginSection.style.display = "none";
+    dashboardSection.style.display = "block";
+    launchConfetti();
   }
-  updateConfetti();
-}
-
-function updateConfetti(){
-  for(let i=0;i<confettiParticles.length;i++){
-    let p = confettiParticles[i];
-    p.y += (Math.cos(0.01) + p.d/2);
-    p.x += Math.sin(0.01);
-    if(p.y > canvas.height){
-      p.y = 0 - p.r;
-      p.x = Math.random()*canvas.width;
-    }
-  }
-}
-
-let confettiInterval;
-function launchConfetti(){
-  createConfetti();
-  confettiInterval = setInterval(drawConfetti, 20);
-  setTimeout(()=>clearInterval(confettiInterval),5000);
-}
-
-window.addEventListener('resize', ()=>{
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
 });
 </script>
-
 </body>
 </html>
+
