@@ -70,27 +70,32 @@ function showUser(user) {
     </div>
   `;
 
-  // Bouton déconnexion
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    // Supprime le code de l'URL
-    window.history.replaceState({}, document.title, window.location.pathname);
-    // Réaffiche le bouton Discord
+    // Déconnexion : réaffiche le bouton Discord
     loginContent.innerHTML = `
       <a class="discord-btn" 
-         href="https://discord.com/api/oauth2/authorize?client_id=1324712992910213150&redirect_uri=https%3A%2F%2Fcraftpick.fr%2Flogin.html&response_type=code&scope=identify">
+         href="https://discord.com/oauth2/authorize?client_id=1324712992910213150&response_type=code&redirect_uri=https%3A%2F%2Fadmin-forge.github.io%2Fsite%2Flogin.html&scope=email+guilds.join">
         Se connecter avec Discord
       </a>
     `;
   });
 }
 
-// Si un code est présent dans l'URL, afficher l'utilisateur simulé
+// Si code présent
 if(code){
   const simulatedUser = {
     username: "TestUser",
     avatar: "https://cdn.discordapp.com/avatars/81384788765712384/2b5bfa9e7a6bb05d6c1e.png?size=128"
   };
   showUser(simulatedUser);
+
+  // Supprime automatiquement le code de l'URL
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  // Redirection automatique après 2 secondes (vers index.html par exemple)
+  setTimeout(() => {
+    window.location.href = "index.html"; // Remplace par ta page d'accueil si nécessaire
+  }, 2000);
 }
 </script>
 </body>
