@@ -25,16 +25,14 @@
   --discord-hover: #4752C4;
 }
 body {
-  margin:0; font-family:'Roboto',sans-serif; background:var(--bg); color:var(--text); line-height:1.6;
+  margin:0; font-family:'Roboto',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; overflow-x:hidden;
 }
 header {
   display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; background:var(--card-bg); box-shadow:0 2px 4px rgba(0,0,0,0.1);
 }
 .logo { font-weight:700; font-size:1.5rem; color:var(--primary); }
 nav a { margin-left:1rem; color:var(--text); text-decoration:none; font-weight:500; }
-.toggle-btn {
-  background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--text);
-}
+.toggle-btn { background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--text);}
 .main-btn, .discord-btn, .logout-btn {
   padding:.75rem 1.5rem; font-weight:600; border:none; border-radius:6px; cursor:pointer; text-decoration:none; display:inline-block;
   transition: background 0.3s ease, transform 0.3s ease;
@@ -56,7 +54,9 @@ section h2 { font-size:2rem; margin-bottom:1rem; color:var(--primary); }
 .card a { font-weight:500; color:var(--primary); text-decoration:none; }
 .user-info img { width:80px; border-radius:50%; margin:1rem 0; border:2px solid var(--primary);}
 .user-info p { font-size:1.2rem; font-weight:500; margin:0.5rem 0; }
+#welcomeMessage { font-size:1.5rem; font-weight:700; color:var(--primary); margin-top:1rem; opacity:0; transition: opacity 1s ease, transform 1s ease;}
 footer { text-align:center; padding:2rem 1rem; background:var(--card-bg); margin-top:2rem; }
+canvas#confetti { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999;}
 </style>
 </head>
 <body data-theme="light">
@@ -83,6 +83,7 @@ footer { text-align:center; padding:2rem 1rem; background:var(--card-bg); margin
         Se connecter avec Discord
       </a>
     </div>
+    <div id="welcomeMessage"></div>
   </section>
 
   <section id="guides">
@@ -111,6 +112,8 @@ footer { text-align:center; padding:2rem 1rem; background:var(--card-bg); margin
   <p>© 2024 MC Admin Forge • Mode clair/sombre disponible</p>
 </footer>
 
+<canvas id="confetti"></canvas>
+
 <script>
 // Thème sombre / clair
 const themeBtn = document.getElementById('themeToggle');
@@ -123,16 +126,21 @@ themeBtn.addEventListener('click', () => {
 const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
 const loginContent = document.getElementById('loginContent');
+const welcomeMessage = document.getElementById('welcomeMessage');
 
 function showUser(user) {
   loginContent.innerHTML = `
     <div class="user-info">
-      <p>Connecté avec Discord !</p>
       <img src="${user.avatar}" alt="Avatar">
       <p>Pseudo : ${user.username}</p>
       <button class="logout-btn" id="logoutBtn">Se déconnecter</button>
     </div>
   `;
+  welcomeMessage.textContent = `Bienvenue, ${user.username} !`;
+  welcomeMessage.style.opacity = 1;
+  welcomeMessage.style.transform = "translateY(0)";
+  launchConfetti();
+
   document.getElementById('logoutBtn').addEventListener('click', () => {
     window.history.replaceState({}, document.title, window.location.pathname);
     loginContent.innerHTML = `
@@ -141,10 +149,12 @@ function showUser(user) {
         Se connecter avec Discord
       </a>
     `;
+    welcomeMessage.style.opacity = 0;
+    welcomeMessage.textContent = '';
   });
 }
 
-// Si code présent dans l'URL, simuler utilisateur
+// Si code présent, simuler utilisateur
 if(code){
   const simulatedUser = {
     username: "MCAdmin",
@@ -153,8 +163,66 @@ if(code){
   showUser(simulatedUser);
   window.history.replaceState({}, document.title, window.location.pathname);
 }
+
+// Confettis 🎉
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let confettiParticles = [];
+function createConfetti() {
+  const colors = ["#ff0a54","#ff477e","#ff7096","#ff85a1","#fbb1b9","#f9bec7"];
+  for(let i=0;i<150;i++){
+    confettiParticles.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height - canvas.height,
+      r: Math.random()*6+2,
+      d: Math.random()*20+10,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      tilt: Math.random()*10-10
+    });
+  }
+}
+
+function drawConfetti(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let i=0;i<confettiParticles.length;i++){
+    let p = confettiParticles[i];
+    ctx.beginPath();
+    ctx.lineWidth = p.r;
+    ctx.strokeStyle = p.color;
+    ctx.moveTo(p.x + p.tilt + p.r/2, p.y);
+    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r/2);
+    ctx.stroke();
+  }
+  updateConfetti();
+}
+
+function updateConfetti(){
+  for(let i=0;i<confettiParticles.length;i++){
+    let p = confettiParticles[i];
+    p.y += (Math.cos(0.01) + p.d/2);
+    p.x += Math.sin(0.01);
+    if(p.y > canvas.height){
+      p.y = 0 - p.r;
+      p.x = Math.random()*canvas.width;
+    }
+  }
+}
+
+let confettiInterval;
+function launchConfetti(){
+  createConfetti();
+  confettiInterval = setInterval(drawConfetti, 20);
+  setTimeout(()=>clearInterval(confettiInterval),5000);
+}
+
+window.addEventListener('resize', ()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 </script>
 
 </body>
 </html>
-
