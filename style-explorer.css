@@ -1,0 +1,78 @@
+/* Couleurs & typographie */
+body {
+  background: #0b1020;
+  color: #e6eef8;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Barre de recherche & bouton */
+input {
+  padding: 10px;
+  margin: 4px;
+  width: 300px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 6px;
+  background-color: #1c2533;
+  color: #e6eef8;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #2a364c;
+}
+
+/* Conteneur plugin */
+.panel {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Item plugin */
+.plugin-item {
+  margin: 8px 0;
+  padding: 6px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.plugin-item span {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.plugin-item a {
+  color: #90caf9;
+  text-decoration: none;
+  margin-left: 4px;
+}
+
+.plugin-item a:hover {
+  text-decoration: underline;
+}
+
+.plugin-item button {
+  margin-left: 8px;
+}
