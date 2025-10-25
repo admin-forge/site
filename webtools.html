@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Craftpick Tools — Dashboard</title>
+  <style>
+    :root{--bg:#0f172a;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box;font-family:Inter,Segoe UI,Arial,sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#071026 0%, #071821 100%);color:#e6eef6;padding:20px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    h1{font-size:20px;margin:0}
+    .wrap{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    .col{display:flex;flex-direction:column;gap:12px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(2,6,23,0.6);}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:var(--glass);color:inherit}
+    button{background:var(--accent);border:none;padding:8px 12px;border-radius:8px;color:#022;cursor:pointer}
+    small{color:var(--muted)}
+    .row{display:flex;gap:8px}
+    pre{background:#061025;padding:10px;border-radius:8px;overflow:auto}
+    .tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .wide{grid-column:span 2}
+    .log{height:160px;overflow:auto;background:#04101a;padding:10px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <header>
+    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 24 24'><rect width='24' height='24' rx='5' fill='%2306b6d4'/><text x='12' y='17' font-size='12' font-family='Arial' font-weight='700' text-anchor='middle' fill='%23001212'>CP</text></svg>" alt="logo" style="width:44px;height:44px;border-radius:10px;"/>
+    <div>
+      <h1>Craftpick Tools — Gameplay & Web</h1>
+      <small>Boîte à outils pour admins — générateurs et widgets</small>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="col">
+      <!-- Gameplay tools -->
+      <div class="card">
+        <h3>Générateur de commandes avancées</h3>
+        <label for="cmd-type">Type de commande</label>
+        <select id="cmd-type">
+          <option value="give">/give</option>
+          <option value="title">/title</option>
+          <option value="tellraw">/tellraw</option>
+          <option value="summon">/summon</option>
+        </select>
+        <label for="cmd-player">Cible (joueur)</label>
+        <input id="cmd-player" placeholder="@a ou playerName" />
+        <label for="cmd-args">Arguments (JSON / texte)</label>
+        <input id="cmd-args" placeholder='ex: minecraft:diamond_sword 1 0 {Enchantments:[{id:"sharpness",lvl:5}]}' />
+        <div style="margin-top:8px" class="row">
+          <button onclick="generateCommand()">Générer</button>
+          <button onclick="copy('cmd-output')">Copier</button>
+          <button onclick="downloadText('command.txt', document.getElementById('cmd-output').textContent)">Télécharger</button>
+        </div>
+        <pre id="cmd-output" style="margin-top:10px">/give @p minecraft:diamond 1</pre>
+      </div>
+
+      <div class="card tools-grid">
+        <div>
+          <h4>Éditeur de kit</h4>
+          <label>Nom du kit</label>
+          <input id="kit-name" placeholder="Starter" />
+          <label>Items (séparés par | , ex: diamond_sword:1:sharpness=5)</label>
+          <input id="kit-items" placeholder="stone_sword:1|apple:16" />
+          <div style="margin-top:8px" class="row">
+            <button onclick="generateKit()">Générer JSON</button>
+            <button onclick="downloadKit()">Télécharger</button>
+          </div>
+        </div>
+
+        <div>
+          <h4>Scoreboard / Tablist</h4>
+          <label>Ligne (ex: "§6Points: §f{points}")</label>
+          <input id="score-line" placeholder="Points: {points}" />
+          <div style="margin-top:8px" class="row">
+            <button onclick="generateScoreboard()">Créer</button>
+            <button onclick="copy('score-output')">Copier</button>
+          </div>
+          <pre id="score-output">objective add points dummy Points</pre>
+        </div>
+
+        <div class="wide">
+          <h4>Constructeur de menu GUI (ex: Chest GUI)</h4>
+          <label>Nom du menu</label>
+          <input id="menu-name" placeholder="Boutique" />
+          <label>Slots (format JSON minimal — item:label:action)</label>
+          <input id="menu-slots" placeholder="0:diamond:buy_kit 1:stone:info" />
+          <div style="margin-top:8px" class="row">
+            <button onclick="buildGUI()">Générer snippet</button>
+            <button onclick="downloadText('gui.yml', document.getElementById('gui-output').textContent)">Télécharger</button>
+          </div>
+          <pre id="gui-output">menu:
+  name: Boutique
+  size: 27
+  items: []</pre>
+        </div>
+
+      </div>
+
+      <div class="card">
+        <h4>Générateur d'arène rapide (ex: BedWars)</h4>
+        <label>Nom de l'arène</label>
+        <input id="arena-name" placeholder="SkyFortress" />
+        <label>Nombre d'équipes</label>
+        <select id="arena-teams"><option>2</option><option>4</option><option>8</option></select>
+        <div style="margin-top:8px" class="row">
+          <button onclick="generateArena()">Générer config</button>
+          <button onclick="downloadText('arena.yml', document.getElementById('arena-output').textContent)">Télécharger</button>
+        </div>
+        <pre id="arena-output"># Arena config sample</pre>
+      </div>
+
+    </div>
+
+    <aside class="col">
+      <div class="card">
+        <h3>Outils Web</h3>
+        <small>Statut serveur, widget, votes & dashboard</small>
+      </div>
+
+      <div class="card">
+        <h4>Statut serveur (ping)</h4>
+        <label>IP:Port</label>
+        <input id="srv-ip" placeholder="craftpick.playcraft.me:25565" value="craftpick.playcraft.me:25565" />
+        <div style="margin-top:8px" class="row">
+          <button onclick="checkServer()">Vérifier</button>
+          <button onclick="generateWidget()">Générer widget</button>
+        </div>
+        <pre id="srv-out">Aucun test effectué.</pre>
+      </div>
+
+      <div class="card">
+        <h4>Générateur de widget HTML</h4>
+        <label>Type</label>
+        <select id="widget-type"><option>Mini (badge)</option><option>Full (status + players)</option></select>
+        <label>IP affichée</label>
+        <input id="widget-ip" placeholder="craftpick.playcraft.me:25565" value="craftpick.playcraft.me:25565" />
+        <div style="margin-top:8px" class="row">
+          <button onclick="generateWidget()">Créer widget</button>
+          <button onclick="copy('widget-output')">Copier</button>
+        </div>
+        <pre id="widget-output">&lt;!-- widget --&gt;</pre>
+      </div>
+
+      <div class="card">
+        <h4>Système de votes</h4>
+        <label>URL du site de votes</label>
+        <input id="vote-url" placeholder="https://minecraft-mp.com/server/xxxx/vote/" />
+        <div style="margin-top:8px" class="row">
+          <button onclick="generateVoteLinks()">Générer liens</button>
+          <button onclick="copy('vote-output')">Copier</button>
+        </div>
+        <pre id="vote-output">Aucun lien.</pre>
+      </div>
+
+      <div class="card">
+        <h4>Dashboard admin (logs + backups)</h4>
+        <label>Planifier backup (cron style)</label>
+        <input id="backup-cron" placeholder="0 3 * * * (tous les jours à 03:00)" />
+        <div style="margin-top:8px" class="row">
+          <button onclick="scheduleBackup()">Planifier</button>
+          <button onclick="clearLog()">Effacer log</button>
+        </div>
+        <div class="log" id="admin-log">
+          <div><small>Logs système...</small></div>
+        </div>
+      </div>
+
+    </aside>
+  </main>
+
+  <script>
+    // Helpers
+    function copy(id){
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard?.writeText(text).then(()=>alert('Copié !'))
+    }
+    function downloadText(filename, text){
+      const a = document.createElement('a');
+      const blob = new Blob([text], {type:'text/plain'});
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // Command generator
+    function generateCommand(){
+      const type = document.getElementById('cmd-type').value;
+      const player = document.getElementById('cmd-player').value || '@p';
+      const args = document.getElementById('cmd-args').value || '';
+      let cmd = '';
+      if(type==='give') cmd = `/give ${player} ${args || 'minecraft:diamond 1'}`;
+      else if(type==='title') cmd = `/title ${player} title ${JSON.stringify(args || 'Hello')}`;
+      else if(type==='tellraw') cmd = `/tellraw ${player} ${args || '{"text":"Hello"}'}`;
+      else if(type==='summon') cmd = `/summon ${args || 'minecraft:zombie'}`;
+      document.getElementById('cmd-output').textContent = cmd;
+      log('Generated command: ' + cmd);
+    }
+
+    // Kit generator
+    function generateKit(){
+      const name = document.getElementById('kit-name').value || 'starter';
+      const raw = document.getElementById('kit-items').value || 'stone_sword:1';
+      const items = raw.split('|').map(s=>{
+        const parts = s.trim().split(':');
+        return {item:parts[0]||'stone', amount:parseInt(parts[1])||1, meta:parts.slice(2).join(':')||''}
+      });
+      const out = {name, items};
+      const txt = JSON.stringify(out, null, 2);
+      const area = document.createElement('textarea'); area.value = txt; area.style.display='none';
+      document.body.appendChild(area);
+      document.getElementById('cmd-output').textContent = '/give @p examplekit(see download)';
+      log('Kit generated: ' + name);
+      // show in a modal-like pre
+      alert('Kit JSON généré — cliquez sur Télécharger pour l'enregistrer.');
+      window._lastKit = txt;
+    }
+    function downloadKit(){
+      if(window._lastKit) downloadText('kit-'+(document.getElementById('kit-name').value||'kit')+'.json', window._lastKit);
+      else alert('Génère d\'abord le kit.');
+    }
+
+    // Scoreboard
+    function generateScoreboard(){
+      const line = document.getElementById('score-line').value || 'Points: {points}';
+      const obj = `objective add points dummy Points\nscoreboard players set @a points 0\n# Example line: ${line}`;
+      document.getElementById('score-output').textContent = obj;
+      log('Scoreboard created');
+    }
+
+    // GUI builder
+    function buildGUI(){
+      const name = document.getElementById('menu-name').value || 'Shop';
+      const slotsRaw = document.getElementById('menu-slots').value || '0:diamond:buy_kit';
+      const items = slotsRaw.split(',').map(s=>{
+        const p = s.trim().split(':');
+        return {slot:parseInt(p[0]||0), item:p[1]||'stone', action:p[2]||''};
+      });
+      const yml = `menu:\n  name: ${name}\n  size: 27\n  items:\n` + items.map(it=>`    - slot: ${it.slot}\n      item: ${it.item}\n      action: ${it.action}\n`).join('');
+      document.getElementById('gui-output').textContent = yml;
+      log('GUI built: ' + name);
+    }
+
+    // Arena generator
+    function generateArena(){
+      const name = document.getElementById('arena-name').value || 'arena';
+      const teams = document.getElementById('arena-teams').value || 2;
+      const template = `arena:\n  name: ${name}\n  teams: ${teams}\n  spawns:\n` + Array.from({length:teams}).map((_,i)=>`    team${i+1}: spawn_x:${i*10} spawn_y:64 spawn_z:${i*15}\n`).join('');
+      document.getElementById('arena-output').textContent = template;
+      log('Arena generated: ' + name);
+    }
+
+    // Web tools: server check (uses public API if available)
+    async function checkServer(){
+      const ipraw = document.getElementById('srv-ip').value || '';
+      const out = document.getElementById('srv-out');
+      out.textContent = 'Vérification en cours...';
+      try{
+        // This uses the public mcsrvstat API. If your environment blocks it, replace with your backend.
+        const ip = ipraw.split(':')[0];
+        const port = ipraw.split(':')[1]||25565;
+        const res = await fetch(`https://api.mcsrvstat.us/2/${ip}`);
+        if(!res.ok) throw new Error('API non disponible');
+        const j = await res.json();
+        const players = j.players?.online ?? 'N/A';
+        const version = j.version || 'N/A';
+        out.textContent = `Online: ${j.online ? 'oui' : 'non'}\nJoueurs: ${players}\nVersion: ${version}`;
+        log('Server check: ' + ipraw + ' -> ' + (j.online? 'online' : 'offline'));
+      }catch(e){
+        out.textContent = 'Impossible de joindre l\'API (CORS/network). Le widget sera généré localement.';
+        log('Server check failed: ' + e.message);
+      }
+    }
+
+    // Widget generator
+    function generateWidget(){
+      const t = document.getElementById('widget-type').value;
+      const ip = document.getElementById('widget-ip').value;
+      let html = '';
+      if(t.includes('Mini')){
+        html = `<div class=\"mc-widget\">`+
+               `<strong>${ip.split(':')[0]}</strong> — <span>En ligne ?</span>`+
+               `</div>`;
+      }else{
+        html = `<div class=\"mc-widget-full\">\n  <h3>${ip.split(':')[0]}</h3>\n  <p>Status: <span id=\"mc-status\">unknown</span></p>\n  <p>Players: <span id=\"mc-players\">-</span></p>\n</div>`;
+      }
+      document.getElementById('widget-output').textContent = html;
+      log('Widget generated for ' + ip);
+    }
+
+    // Vote links
+    function generateVoteLinks(){
+      const url = document.getElementById('vote-url').value || '';
+      if(!url) return alert('Renseigne une URL');
+      const md = `Liens de vote générés:\n- ${url}\n- ${url.replace('https://','http://')}`;
+      document.getElementById('vote-output').textContent = md;
+      log('Vote links generated');
+    }
+
+    // Backup scheduler (UI-only)
+    function scheduleBackup(){
+      const cron = document.getElementById('backup-cron').value || '0 3 * * *';
+      const logEl = document.getElementById('admin-log');
+      const entry = document.createElement('div');
+      entry.innerHTML = `<small>Backup planifié: ${cron} (UI only)</small>`;
+      logEl.prepend(entry);
+      log('Backup scheduled: ' + cron);
+    }
+    function clearLog(){ document.getElementById('admin-log').innerHTML = ''; log('Logs cleared'); }
+
+    // Simple logger
+    function log(text){
+      const l = document.getElementById('admin-log');
+      const d = document.createElement('div'); d.innerHTML = `<small>${new Date().toLocaleString('fr-FR')} — ${text}</small>`;
+      l.prepend(d);
+      console.log(text);
+    }
+
+  </script>
+</body>
+</html>
