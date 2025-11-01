@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Admin Forge - Outils Serveur</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <div class="logo">MC Admin Forge</div>
+    <nav>
+        <ul>
+            <li><a href="index.html">Tableau de bord</a></li>
+            <li><a href="server-tools.html" class="active">Outils Serveur</a></li>
+            <li><a href="logs.html">Logs</a></li>
+            <li><a href="ai-assistant.html">Assistant IA</a></li>
+            <li><a href="utils.html">Utilitaires</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="container">
+    <h1>Outils Serveur</h1>
+    <div class="cards">
+        <div class="card">
+            <h2>Redémarrage</h2>
+            <button id="restartServer">Redémarrer le serveur</button>
+        </div>
+        <div class="card">
+            <h2>Sauvegarde</h2>
+            <button id="backupServer">Sauvegarder le serveur</button>
+        </div>
+        <div class="card">
+            <h2>Mise à jour</h2>
+            <button id="updateServer">Mettre à jour le serveur</button>
+        </div>
+        <div class="card">
+            <h2>Commande rapide</h2>
+            <input type="text" id="customCmd" placeholder="Ex: /say Bonjour à tous">
+            <button id="sendCmd">Envoyer la commande</button>
+        </div>
+    </div>
+    <div id="notifications" style="margin-top:20px;"></div>
+</main>
+
+<footer>MC Admin Forge • <a href="https://camicko.fr">Camicko</a></footer>
+
+<script>
+// Helper pour notifications
+function notify(message){
+    const notifEl = document.getElementById('notifications');
+    const p = document.createElement('p');
+    p.textContent = message;
+    notifEl.appendChild(p);
+}
+
+// Fonctions outils serveur (simulation front-end)
+document.getElementById('restartServer').onclick = () => notify('Redémarrage du serveur lancé...');
+document.getElementById('backupServer').onclick = () => notify('Sauvegarde du serveur en cours...');
+document.getElementById('updateServer').onclick = () => notify('Mise à jour du serveur en cours...');
+document.getElementById('sendCmd').onclick = () => {
+    const cmdInput = document.getElementById('customCmd');
+    if(cmdInput.value.trim() !== ''){
+        notify('Commande envoyée: ' + cmdInput.value.trim());
+        cmdInput.value = '';
+    } else {
+        notify('Veuillez entrer une commande.');
+    }
+};
+</script>
+</body>
+</html>
