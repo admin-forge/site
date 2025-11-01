@@ -38,7 +38,7 @@ async function askAI(){
     if(!prompt){ responseEl.textContent = 'Veuillez entrer une question.'; return; }
     responseEl.textContent = 'Chargement...';
     try{
-        const res = await fetch('https://api.groq.ai/v1/query', {
+        const res = await fetch('https://api.groq.com/openai/v1', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
