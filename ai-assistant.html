@@ -1,0 +1,59 @@
+<!-- ai-assistant.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Admin Forge - Assistant IA</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <div class="logo">MC Admin Forge</div>
+    <nav>
+        <ul>
+            <li><a href="index.html">Tableau de bord</a></li>
+            <li><a href="server-tools.html">Outils Serveur</a></li>
+            <li><a href="logs.html">Logs</a></li>
+            <li><a href="ai-assistant.html" class="active">Assistant IA</a></li>
+            <li><a href="utils.html">Utilitaires</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="container">
+    <section>
+        <h1>Assistant IA Groq</h1>
+        <p>Pose tes questions ou demandes d'aide sur l'administration de ton serveur Minecraft.</p>
+        <textarea id="aiPrompt" placeholder="Écris ta question ici..." style="height:150px;"></textarea>
+        <button id="askAI">Demander à l'IA</button>
+        <div id="aiResponse" style="margin-top:10px; color:#fff;"></div>
+    </section>
+</main>
+<footer>MC Admin Forge • <a href="https://camicko.fr">Camicko</a></footer>
+<script>
+async function askAI(){
+    const promptEl = document.getElementById('aiPrompt');
+    const responseEl = document.getElementById('aiResponse');
+    const prompt = promptEl.value.trim();
+    if(!prompt){ responseEl.textContent = 'Veuillez entrer une question.'; return; }
+    responseEl.textContent = 'Chargement...';
+    try{
+        const res = await fetch('https://api.groq.ai/v1/query', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer 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'
+            },
+            body: JSON.stringify({prompt})
+        });
+        const data = await res.json();
+        responseEl.textContent = data.response || 'Aucune réponse reçue';
+    }catch(e){
+        responseEl.textContent = 'Erreur lors de la communication avec l\'IA';
+    }
+}
+
+document.getElementById('askAI').onclick = askAI;
+</script>
+</body>
+</html>
