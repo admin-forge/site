@@ -7,125 +7,40 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<main>
-
-  <!-- Hero -->
-  <section class="card hero">
-    <h1>Bienvenue sur MC Admin Forge</h1>
-    <p>Votre assistant pour gérer des serveurs Minecraft</p>
-    <a class="discord-btn" href="https://discord.com/oauth2/authorize?client_id=1324712992910213150&response_type=code&redirect_uri=https%3A%2F%2Fadmin-forge.github.io%2Fsite%2Fadmin.html&scope=email+guilds.join">
-      Se connecter avec Discord
-    </a>
-  </section>
-
-  <!-- Quick Links -->
-<section class="card">
-  <h2>Liens rapides</h2>
-  <div class="quick-links">
-    <a href="#createServerSection">Créer un serveur</a>
-    <a href="#guidesSection">Guides & Tutoriels</a>
-    <a href="#toolsSection">Outils</a>
-    <a href="#discordSection">Discord</a>
-  </div>
-</section>
-
-  <!-- Discord Widgets -->
-  <section class="card" id="discordSection">
-    <h2>Nos serveurs Discord</h2>
-    
-    <h3>Forge MC Admin</h3>
-    <iframe src="https://discord.com/widget?id=1431267157093777602&theme=dark" width="100%" height="300" allowtransparency="true" frameborder="0"></iframe>
-    
-    <h3>Pixelbattles</h3>
-    <iframe src="https://discord.com/widget?id=1211731735679606814&theme=dark" width="100%" height="300" allowtransparency="true" frameborder="0"></iframe>
-    
-    <h3>Communauté de Arthurleb</h3>
-    <iframe src="https://discord.com/widget?id=1419257442335985697&theme=dark" width="100%" height="300" allowtransparency="true" frameborder="0"></iframe>
-    
-    <h3>Craftpick Network</h3>
-    <iframe src="https://discord.com/widget?id=1359476019626512404&theme=dark" width="100%" height="300" allowtransparency="true" frameborder="0"></iframe>
-  </section>
-
-  <!-- Guides Section -->
-  <section class="card" id="guidesSection">
-    <h2>Guides & Tutoriels</h2>
-    <div class="cards">
-      <div class="card"><h3>Installation</h3><p>Spigot, Paper, BungeeCord, Velocity</p></div>
-      <div class="card"><h3>Configuration</h3><p>Permissions, ranks, anti-cheat, scoreboard…</p></div>
-      <div class="card"><h3>Optimisation</h3><p>Lag, TPS, mémoire, versions 1.8 → 1.20</p></div>
-      <div class="card"><h3>Sécurité</h3><p>Auth, anti-crash, firewall</p></div>
-      <div class="card"><h3>Gestion</h3><p>Staff, économie, boutique</p></div>
-    </div>
-  </section>
-
-  <!-- Tools Section -->
-  <section class="card" id="toolsSection">
-    <h2>Outils en ligne</h2>
-    <div class="cards">
-      <div class="card"><h3>Générateur de MOTD</h3><button class="main-btn">Lancer</button></div>
-      <div class="card"><h3>Convertisseur config.yml ↔ JSON</h3><button class="main-btn">Lancer</button></div>
-      <div class="card"><h3>Compatibilité plugin/MC</h3><button class="main-btn">Tester</button></div>
-      <div class="card"><h3>Calculateur de RAM</h3><button class="main-btn">Calculer</button></div>
-      <div class="card"><h3>Testeur de latence</h3><button class="main-btn">Tester</button></div>
-    </div>
-  </section>
-
-  <!-- Créer un serveur (simulation) -->
-  <section class="card" id="createServerSection">
-    <h2>Créer un serveur Minecraft</h2>
-    
-    <input type="text" id="serverName" placeholder="Nom du serveur">
-    <select id="serverVersion">
-      <option value="1.8.8">1.8.8</option>
-      <option value="1.12.2">1.12.2</option>
-      <option value="1.16.5">1.16.5</option>
-      <option value="1.20">1.20</option>
-    </select>
-    <input type="text" id="plugins" placeholder="Plugins séparés par des virgules">
-    
-    <button class="main-btn" id="createServerBtn">Créer le projet serveur</button>
-    
-    <p id="serverCreatedMsg" style="display:none;margin-top:1rem;"></p>
-  </section>
-
+<header>
+    <div class="logo">MC Admin Forge</div>
+    <nav>
+        <ul>
+            <li><a href="index.html">Tableau de bord</a></li>
+            <li><a href="server-tools.html">Outils Serveur</a></li>
+            <li><a href="logs.html">Logs</a></li>
+            <li><a href="ai-assistant.html">Assistant IA</a></li>
+            <li><a href="utils.html">Utilitaires</a></li>
+        </ul>
+    </nav>
+</header>
+<main class="container">
+    <section>
+        <h1>Tableau de bord</h1>
+        <div class="cards">
+            <div class="card">
+                <h2>Stats du serveur</h2>
+                <p>Statut: <span id="serverStatus">Inconnu</span></p>
+                <p>Joueurs: <span id="serverPlayers">0</span></p>
+                <p>CPU: <span id="serverCPU">--%</span></p>
+                <p>RAM: <span id="serverRAM">-- GB</span></p>
+            </div>
+            <div class="card">
+                <h2>Notifications</h2>
+                <div id="notifications"></div>
+            </div>
+        </div>
+    </section>
 </main>
-
-<script src="header.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<script>
-// ==== Création de serveur simulée ====
-const createBtn = document.getElementById('createServerBtn');
-const serverName = document.getElementById('serverName');
-const serverVersion = document.getElementById('serverVersion');
-const plugins = document.getElementById('plugins');
-const serverCreatedMsg = document.getElementById('serverCreatedMsg');
-
-createBtn.addEventListener('click', ()=>{
-  if(serverName.value.trim() === ""){
-    alert("Veuillez entrer un nom de serveur !");
-    return;
-  }
-
-  const project = {
-    name: serverName.value,
-    version: serverVersion.value,
-    plugins: plugins.value.split(',').map(p=>p.trim())
-  };
-
-  serverCreatedMsg.style.display = "block";
-  serverCreatedMsg.innerHTML = `✅ Projet serveur "<strong>${project.name}</strong>" version <strong>${project.version}</strong> créé avec ${project.plugins.length} plugin(s).`;
-
-  confetti({
-    particleCount: 100,
-    spread: 90,
-    origin: { y: 0.6 }
-  });
-
-  serverName.value = "";
-  serverVersion.value = "1.8.8";
-  plugins.value = "";
-});
-</script>
+<footer>MC Admin Forge • <a href="https://camicko.fr">Camicko</a></footer>
+<script src="script-index.js"></script>
+<script src="script-server-tools.js"></script>
+<script src="script-ai.js"></script>
+<script src="script-utils.js"></script>
 </body>
 </html>
